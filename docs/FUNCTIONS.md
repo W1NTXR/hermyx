@@ -33,7 +33,7 @@ Persists contacts list to secure storage.
 Interface for message transport abstraction. Methods: start/stop, send (bytes to recipient), received (stream of incoming bytes), peers (list of reachable peer IDs).
 
 ### lib/transport/bridgefy_transport.dart::BridgefyTransport
-Bridgefy mesh transport: sends messages in broadcast mode; app layer addresses via recipient_key in envelope.
+Bridgefy mesh transport: sends messages in broadcast mode; app layer addresses via recipient_key in envelope. Includes debugPrint logging in delegate callbacks for diagnosing connectivity and peer discovery issues. Tracks connection churn (connect/disconnect/failed-secure-connection events) via private `_trackConnectionChurn()` to work around a Bridgefy SDK bug (Nordic BleManager BroadcastReceiver leak that eventually throws "Too many receivers"); exposes `restartRecommended` (Stream<void>) which fires once churn crosses `_churnWarningThreshold` (700) so the UI can warn the user to restart before hitting Android's 1000-receiver cap.
 
 ### lib/transport/memory_transport.dart::MemoryTransport
 In-memory test transport: two instances can connect/disconnect and exchange bytes locally (no real network).
@@ -48,7 +48,7 @@ In-memory chat history. Stores sent and received messages grouped by contact.
 Individual message record: timestamp, sender/recipient, plaintext, delivery state.
 
 ### lib/ui/home_screen.dart::HomeScreen
-Main UI screen: list of contacts, button to add contact via QR scan, entry point to chat.
+Main UI screen: list of contacts, button to add contact via QR scan, entry point to chat. `_HomeScreenState.initState()` subscribes to `transport.restartRecommended` (when transport is a BridgefyTransport) and calls `_showRestartWarning()` to show an AlertDialog telling the user to close and reopen the app, mitigating a Bridgefy SDK receiver-leak crash.
 
 ### lib/ui/chat_screen.dart::ChatScreen
 Chat conversation UI with a contact: message list, text input, send button, auto-scroll.

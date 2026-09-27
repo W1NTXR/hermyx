@@ -11,7 +11,10 @@ echo "$changed" | grep -Evq '\.md$' || exit 0                   # only docs chan
 
 missing=""
 echo "$changed" | grep -qx 'CONTEXT.md' || missing="CONTEXT.md"
-echo "$changed" | grep -qx 'docs/FUNCTIONS.md' || missing="$missing docs/FUNCTIONS.md"
+# FUNCTIONS.md lists functions, so only require it when Dart code under lib/ changed.
+if echo "$changed" | grep -q '^lib/.*\.dart$'; then
+  echo "$changed" | grep -qx 'docs/FUNCTIONS.md' || missing="$missing docs/FUNCTIONS.md"
+fi
 [ -z "$missing" ] && exit 0
 
 echo "Code changed but not updated: $missing. Call the doc-keeper subagent, then finish." >&2

@@ -6,6 +6,7 @@ import '../contacts.dart';
 import '../crypto/identity.dart';
 import '../mesh/router.dart';
 import '../transport/transport.dart';
+import '../transport/bridgefy_transport.dart';
 import 'chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,6 +32,32 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final transport = widget.transport;
+    if (transport is BridgefyTransport) {
+      transport.restartRecommended.listen((_) => _showRestartWarning());
+    }
+  }
+
+  Future<void> _showRestartWarning() async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Restart recommended'),
+        content: const Text(
+          'This session has cycled through a lot of Bluetooth connections. '
+          'Close and reopen the app to avoid a system Bluetooth crash.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+        ],
+      ),
+    );
+  }
+
   Future<void> _addContact() async {
     final name = TextEditingController();
     final code = TextEditingController();
@@ -70,7 +97,9 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           StreamBuilder<Set<String>>(
             stream: widget.transport.peers,
-            initialData: const {},
+            initialData: widget.transport is BridgefyTransport
+                ? (widget.transport as BridgefyTransport).currentPeers
+                : const {},
             builder: (context, snap) => Padding(
               padding: const EdgeInsets.only(right: 16),
               child: Center(child: Text('${snap.data!.length} nearby')),

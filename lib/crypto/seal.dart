@@ -17,7 +17,10 @@ Future<SecretKey> _sharedKey(Identity me, Uint8List theirAgreeKey) async {
   );
   return Hkdf(hmac: Hmac.sha256(), outputLength: 32).deriveKey(
     secretKey: shared,
-    nonce: const [],
+    // cryptography_flutter's Android HMAC uses SecretKeySpec, which rejects an
+    // empty key; HKDF's spec default for an omitted salt is a zero-filled
+    // block the length of the hash output, so use that explicitly.
+    nonce: Uint8List(32),
     info: utf8.encode('hermyx-v1'),
   );
 }

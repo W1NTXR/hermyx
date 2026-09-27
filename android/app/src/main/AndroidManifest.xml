@@ -40,6 +40,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- The Bridgefy Android SDK checks for the key here too, separately from initialize().
+             Value comes from env.json via the manifestPlaceholders in build.gradle.kts. -->
+        <meta-data
+            android:name="com.bridgefy.sdk.API_KEY"
+            android:value="${bridgefyApiKey}" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
