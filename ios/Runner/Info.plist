@@ -66,5 +66,14 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Hermyx uses Bluetooth to send messages to nearby phones without internet.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Hermyx uses Bluetooth to send messages to nearby phones without internet.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+	</array>
 </dict>
 </plist>
