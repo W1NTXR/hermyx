@@ -46,7 +46,3 @@ app.*.map.json
 
 # Local secrets (Bridgefy API key)
 env.json
-CONTEXT.md
-Architecture.md
-doc-keeper.md
-.claude/
